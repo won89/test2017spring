@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+<bean id="dataSource"
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:xe" />
+	<property name="username" value="hr" />
+	<property name="password" value="hr" />
+</bean>
+<!-- 2.mybatis SqlSession객체관련  정보 설정  -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<property name="dataSource" ref="dataSource" />
+	<property name="configLocation" value="transaction/configuration.xml" />
+	<property name="mapperLocations" value="transaction/test1-mapper.xml" />
+</bean>
+<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+	<constructor-arg ref="sqlSessionFactory" />
+</bean>
+<!-- 3.service, dao 객체 생성 -->
+<!-- <bean id="empDAO" class="transaction.EmpDAO">
+<property name="sqlSession" ref="sqlSessionTemplate"/>
+</bean>
+<bean id="empService" class="transaction.EmpServiceImpl">
+<property name="empDAO" ref="empDAO"/>
+</bean>  -->
+<context:component-scan base-package="transaction" />
+ <!-- 4.트랜잭션처리 -->
+ <!-- 트랜잭션매니저 -->
+ <bean id="transactionManager"
+  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  <property name="dataSource" ref="dataSource"/>
+ </bean>
+ 
+ <!-- 트랜잭션처리설정 -->
+<!--  <tx:advice id="txAdvice" 
+ transaction-manager="transactionManager">
+  <tx:attributes>
+    <tx:method name="get*" 
+    read-only="false" 
+    rollback-for="Exception" 
+    propagation="REQUIRED"/>
+  </tx:attributes>
+ </tx:advice>  -->
+ 
+ <!-- 트랜잭션적요에소드설정 -->   
+<!--   <aop:config>
+  <aop:pointcut id="testService" expression="execution(public * transaction.*.*(..))" />
+  <aop:advisor advice-ref="txAdvice" pointcut-ref="testService"/>
+ </aop:config> -->
+ 
+ <!-- 어노테이션 적용시 주석 해제 --> 
+ <tx:annotation-driven 
+ transaction-manager="transactionManager" /> 
+
+</beans>
+
+<!-- aop 라이브러리 추가할것 !!!!!!!!!!-->

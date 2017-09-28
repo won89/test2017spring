@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- emp.id -->
+<mapper namespace="emp">
+<!-- sql 실행결과 레코드 1개 = EmpVO객체 매핑
+     컬럼이름 : 변수이름 동일 자동 주입
+ -->
+<select id="all" resultType="EmpVO" >
+	select employee_id, phone_number phone, first_name
+	  from employees
+</select>
+
+<select id="one" parameterType="int" resultType="EmpVO" >
+	select employee_id, first_name, 
+	to_char(hire_date, 'yyyy/mm/dd') hire_date
+	  from employees
+	  where employee_id=#{id} 
+</select>
+
+<select id="oneVO" parameterType="EmpVO" resultType="EmpVO" >
+	select employee_id, first_name, 
+	to_char(hire_date, 'yyyy/mm/dd') hire_date
+	  from employees
+	  where employee_id=#{employee_id}
+</select>
+
+<insert id="create" parameterType="EmpVO">
+insert into employees values
+(#{employee_id}, #{first_name}, #{last_name}, 
+#{email}, #{phone}, SYSDATE , #{job_id},
+null, null, null, null)
+</insert>
+
+<insert id="createWithSelectKey" parameterType="EmpVO">
+	<selectKey keyProperty="employee_id" 
+	order="BEFORE" resultType="int">
+		select mybatis_emp_seq.nextval from dual
+	</selectKey>
+
+insert into employees values
+(#{employee_id}, #{first_name}, #{last_name}, 
+#{email}, #{phone}, SYSDATE , #{job_id},
+null, null, null, null)
+
+</insert>
+
+
+<!-- 사번 1000 사원의 first_name : 자바 
+last_name 이 , 급여 : 50000   부서번호 : 80 변경-->
+<update id="update" parameterType="EmpVO">
+ update employees
+ set first_name=#{first_name},
+ last_name=#{last_name},
+ salary=#{salary},
+ department_id=#{department_id}
+ where employee_id = #{employee_id}
+</update> 
+
+<!-- <update id="update" parameterType="java.util.Map">
+ update employees
+ set first_name=#{f_name},
+ last_name=#{l_name},
+ salary=#{salary},
+ department_id=#{d_id}
+ where employee_id = #{e_id}
+</update>  -->
+
+<!-- 기존 employees 테이블 존재값 삭제x
+insert 했던 레코드 삭제 가능: 1000 사번
+ -->
+<delete id="delete" parameterType="int">
+delete employees where employee_id=#{id}
+</delete>
+
+<!-- <select id="all" resultMap="empmap" >
+	select employee_id, phone_number, first_name
+	  from employees
+</select>
+<resultMap type="mybatis.EmpVO" id="empmap">
+<result column="phone_number" property="phone"/>
+<result column="employee_id" property="employee_id"/>
+<result column="first_name" property="firat_name"/>
+</resultMap> -->
+
+<select id="pagingemp" 
+parameterType="int[]" resultType="EmpVO" >
+	select r, employee_id, first_name, last_name, 
+	phone_number phone
+	from (select a.*, rownum r
+		from 
+		(select * from employees order by hire_date) a
+	)
+	where r between 
+	<foreach collection="array" item="r" 
+	separator="and">
+	#{r}
+	</foreach>
+</select>
+
+<!-- employee_id : 100 : >= 100 -->
+<select id="searchemp" resultType="EmpVO" 
+parameterType="EmpVO">
+
+ select * from employees
+ <where>
+  <if test="employee_id != 0"> 
+   employee_id >= #{employee_id}
+  </if>
+  <if test="first_name != null || last_name != null"> 
+   first_name like #{first_name} or 
+   last_name like #{last_name}
+  </if>
+  <if test="phone != null"> 
+   phone_number like #{phone}
+  </if> 
+ </where>
+</select>
+ 
+</mapper>
+
+
+
+

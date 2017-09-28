@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+<!-- 	1.mybatis 데이터소스(=커넥션풀) 
+를  스프링 제공 DataSource 객체 bean 생성-->
+<bean id="dataSource" class=
+"org.springframework.jdbc.datasource.DriverManagerDataSource">
+<property name="driverClassName" value=
+"oracle.jdbc.driver.OracleDriver" />
+<property name="url" value=
+"jdbc:oracle:thin:@127.0.0.1:1521:xe" />
+<property name="username" value="hr" />
+<property name="password" value="hr" />
+</bean>
+
+<!-- 2. SqlSessionFactory 객체 bean 생성 -->
+<bean id="sqlSessionFactory"
+class="org.mybatis.spring.SqlSessionFactoryBean" >
+<property name="dataSource" ref="dataSource" />
+<!-- mtybatis설정, 매핑파일 -->
+<property name="configLocation" 
+value="/WEB-INF/spring/configuration.xml" />
+<property name="mapperLocations" 
+value="/WEB-INF/spring/*-mapper.xml" />
+
+<!-- <property name="mapperLocations" 
+value="classpath:kitri/edu/mybatis/*-mapper.xml" /> -->
+</bean>
+
+<!-- 3.Mapper인터페이스 사용 설정 -->
+<bean class=
+"org.mybatis.spring.mapper.MapperFactoryBean">
+	<property name="sqlSessionFactory"
+	ref="sqlSessionFactory" />
+	<property name="mapperInterface" 
+	value="kitri.edu.mybatismapper.EmpMapper" />
+</bean>
+
+<!-- 3.mybatis : SqlSession 
+spring : SqlSessionTemplate 객체 bean 생성 -->
+<bean id="sqlSession" class=
+"org.mybatis.spring.SqlSessionTemplate">
+<constructor-arg ref="sqlSessionFactory" />
+</bean>
+
+ <!-- 4.트랜잭션처리 -->
+ <!-- 트랜잭션매니저 -->
+ <bean id="transactionManager"
+  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  <property name="dataSource" ref="dataSource"/>
+ </bean>
+ 
+ <!-- 트랜잭션처리설정 -->
+<!--  <tx:advice id="txAdvice" 
+ transaction-manager="transactionManager">
+  <tx:attributes>
+    <tx:method name="get*" 
+    read-only="false" 
+    rollback-for="Exception" 
+    propagation="REQUIRED"/>
+  </tx:attributes>
+ </tx:advice> --> 
+ 
+ <!-- 트랜잭션적요에소드설정 -->   
+<!--   <aop:config>
+  <aop:pointcut id="testService" expression="execution(public * kitri.edu.mybatismapper.*.*(..))" />
+  <aop:advisor advice-ref="txAdvice" pointcut-ref="testService"/>
+ </aop:config> -->
+
+<!-- <tx:annotation-driven
+transaction-manager="transactionManager"/>
+  -->
+</beans>
+
+

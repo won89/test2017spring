@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org/DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd" >
+
+<configuration>
+<!-- 0. mybatis.EmpVO-EmpVO -->
+<typeAliases>
+	<typeAlias type="transaction.EmpVO" 
+	alias="EmpVO"/>
+</typeAliases>
+<!-- 1. DataSource = ConnectionPool커넥션풀 생성 정보 설정 - 커넥션 이용 -->
+<!-- <environments default="develop">
+ <environment id="develop">
+  <transactionManager type="JDBC" />
+  <dataSource type="POOLED">
+  	<property name="driver" 
+  	value="oracle.jdbc.driver.OracleDriver"/>
+   	<property name="url" 
+  	value="jdbc:oracle:thin:@127.0.0.1:1521:xe"/>
+  	<property name="username" value="hr"/> 	
+  	<property name="password" value="hr"/>
+  	<property name="poolMaxActiveCons" value="50"/>
+  </dataSource>
+ </environment>
+</environments> -->
+
+<!-- 2.sql매핑xml 파일 설정 -->
+<mappers>
+<!-- 	<mapper resource="mybatis/service/sql-mapper.xml" /> -->
+</mappers>
+
+</configuration>
+
+
+
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="transaction">
+
+<select id="allEmp" resultType="EmpVO" >
+	select * from employees
+</select>
+
+<insert id="insertEmp" parameterType="EmpVO">
+insert into employees values
+(#{employee_id}, #{first_name}, #{last_name}, 
+#{email}, #{phone}, SYSDATE , #{job_id},
+null, null, null, null)
+</insert>
+
+</mapper>
+
+
+
+
